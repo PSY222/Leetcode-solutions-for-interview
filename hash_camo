@@ -1,15 +1,8 @@
 
-from collections import defaultdict
+from collections import Counter
+from functools import reduce
 
 def solution(clothes):
-    dic = defaultdict(list)
-    answer = 1
-
-    for j, i in clothes:
-        dic[i].append(j)
-
-    for k in dic.keys():
-        answer *= len(dic[k]) +1
-
-    answer -= 1
+    cnt = Counter([i for i,j in clothes])
+    answer = reduce(lambda x,y: x*(y+1),cnt.values(),1)-1
     return answer
