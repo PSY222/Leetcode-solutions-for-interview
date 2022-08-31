@@ -1,18 +1,15 @@
-from itertools import combinations
-import math
+
+from collections import defaultdict
 
 def solution(clothes):
-    answer = len(clothes)
-    cat = [] ; item = []
-    org = {}
-    
-    for i in clothes:
-            cat.append(i[1])
-            item.append(i[0])
-    
-    for c in list(set(cat)):
-        for n in range(len(clothes)):
-            if c == clothes[n][1]:
-                org[c] = 
-    
-    return org
+    dic = defaultdict(list)
+    answer = 1
+
+    for j, i in clothes:
+        dic[i].append(j)
+
+    for k in dic.keys():
+        answer *= len(dic[k]) +1
+
+    answer -= 1
+    return answer
