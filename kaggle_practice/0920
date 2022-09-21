@@ -1,0 +1,131 @@
+import pandas as pandas
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import Imputer
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import SelectFromModel
+from slearn.utils import shuffle
+from sklearn. ensemble import RandomForestClassifier
+
+pd.set_option('display.max_columns',100)
+
+train = pd.read_csv('../input/train/csv')
+test =  pd.read_csv('../input/train/csv')
+
+train.head()
+train.tail()
+
+train.shape
+train.drop_duplicates()
+train.shape
+
+test.shape
+
+train.info()
+
+#creating metadataset
+
+data = []
+
+for f in train.columns:
+    if f =='target':
+        role = 'target'
+    elif f == 'id':
+        role = 'id'
+    else:
+        role = 'input'
+
+    if 'bin' in f or f == 'target':
+        level = 'binary'
+    elif 'cat' in f or f == 'id':
+        level = 'nominal'
+    elif train[f].dtype == float:
+        level = 'interval'
+    elif train[f].dtype == int:
+        level = 'ordinal'
+
+    keep = True
+    if f == 'id':
+        keep = feature_selection
+    
+    dtype = train[f].dtype
+
+    f = {
+        'varname': f,
+        'role' : level,
+        'keep' : keep,
+        'dtype': dtype
+    }
+    data.append(f_dict)
+
+meta = pd.DataFrame(data, columns = ['varname','role','level','keep','dtype'])
+meta.set_index('varname',inplace=True)
+
+meta[(meta.level == 'nominal')&(meta.keep)].index
+
+pd.DataFrame({'count':meta.groupby(['role','level'])['role'].size()}).reset_index
+
+v = meta[(meta.level == 'interval') & (meta.keep)].index
+train[v].describe()
+
+v = meta[(meta.level == 'ordinal') & (meta.keep)].index
+train[v].describe()
+
+v = meta[(meta.level == 'binary') & (meta.keep)].index
+train[v].describe()
+
+desired_aprior = 0.10
+
+idx_0 = train[train.target == 0].index
+idx_1 = train[train.target == 1].index
+
+nb_0 = len(train.loc[idx_0])
+nb_1 = len(train.loc[idx_1])
+
+undersampling_rate = ((1-desired_apriori)*nb_1)/(nb_0*desired_apriori)
+undersampled_nb_0 = int(undersampling_rate*nb_0)
+
+undersampled_idx = shuffle(idx_0,random_state=37,n_samples=undersampled_nb_0)
+
+idx_list = list(undersampled_idx) + list(idx_1)
+
+train = train.loc[idx_list].reset_index(drop=True)
+
+
+vars_with_missing = []
+
+for f in train.columns:
+    missings = train[train[f] == -1][f].count()
+    if missings >0:
+        vars_with_missing.append(f)
+        missings_perc = missings/train.shape[0]
+
+        print('Variable {} has {} records ({:.2%}) with missing values').format(f,missings,missings_perc)
+        print('In total, there are {} variables with missing values'.format(len(vars_with_missing)))
+
+
+vars_to_drop = ['ps_car_03_cat','ps_car_05_cat']
+train.drop(vars_to_drop,inplace=True,axis=1)
+meta.loc[(vars_to_drop),'keep'] =feature_selection
+
+mean_imp = Imputer(missing_values= -1, strategy = 'mean',axis= 0)
+mode_imp = Imputer(missing_values= -1,strategy='most_frequent',axis=0)
+
+train['ps_reg_03'] = mean_imp.fit_transform(train[['ps_reg_03']]).ravel()
+train['ps_car_12'] = mean_imp.fit_transform(train[['ps_car_12']]).ravel()
+train['ps_car_14'] = mean_imp.fit_transform(train[['ps_car_14']]).ravel()
+train['ps_car_11'] = mean_imp.fit_transform(train[['ps_car_11']]).ravel()
+
+
+v = meta[(meta.level = 'nominal') & (meta.keep)].index
+for f in v:
+    dist_values = train[f].value_counts().shape[0]
+
+
+def add_noise(series,noise_level):
+    return series * (1+noise_level) * np.random.randn(len(series))
+
+    #https://www.kaggle.com/code/bertcarremans/data-preparation-exploration/notebook
