@@ -1,0 +1,22 @@
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        indegree = collections.defaultdict(set)
+        adj_dict = collections.defaultdict(set)
+        
+        for a,b in prerequisites:
+            indegree[a].add(b)
+            adj_dict[b].add(a)
+        
+        start = [i for i in range(numCourses) if not indegree[i]]
+        visit = collections.deque()
+        
+        while start:
+            b = start.pop()
+            visit.append(b)
+            
+            for a in adj_dict[b]:
+                indegree[a].remove(b)
+                if not indegree[a]:
+                    start.append(a)
+                
+        return len(visit) == numCourses
