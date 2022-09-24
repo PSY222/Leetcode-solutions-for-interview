@@ -11,11 +11,11 @@ class Solution:
         visit = collections.deque()
         
         while start:
-            b = start.pop()
-            visit.append(b)
+            s = start.pop()
+            visit.append(s)
             
-            for a in adj_dict[b]:
-                indegree[a].remove(b)
+            for a in adj_dict[s]:
+                indegree[a].remove(s)
                 if not indegree[a]:
                     start.append(a)
                 
