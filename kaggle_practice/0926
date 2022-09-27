@@ -1,0 +1,255 @@
+'''
+Source code
+https://www.kaggle.com/code/gpreda/porto-seguro-exploratory-analysis-and-prediction/notebook
+
+this is a practice code from Kaggle
+'''
+
+
+
+import pandas as pandas
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.utils import shuffle
+from sklearn.preprocessing import Imputer
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import SelectFromModel
+
+from sklearn.mode_selection import StratifiedKFold
+from sklearn..model_selection import cross_val_score
+
+from lightgbm import LGBMClassifier
+from xgboost import XGBClassifier
+from sklearn.linear_model import LogisticRegression
+
+pd.set_option('display.max_columns',100)
+
+trainset = pd.read_csv('../imput/train.csv')
+testset = pd.read_csv('../input/test.csv')
+
+trainset.head()
+
+print("Train dataset(rows,cols:", trainset.shape, "\n Test dataset(rows,cols):",testset.shape)
+
+
+print("Columns in train and not in test dataset:",set(trainset.columns)-set(testset.columns))
+
+data = []
+
+for feature in trainset.columns:
+    if feature =="target":
+        use ='target'
+    elif feature =='id':
+        use ='id'
+    else: use = 'input'
+
+    if 'bin' in feature or feature =='target':
+        type = 'binary'
+    elif 'cat' in feature or feature =='id':
+        type = 'categorical'
+    elif trainset[feature].dtype == float or isinstance(trainset[feature].dtype,float):
+        type = 'real'
+    elif trainset[feature].dtype == int:
+        type = 'integer'
+    
+    preserve =True
+    if feature == 'id':
+        preserve =False
+
+    dtype = trainset[feature].dtype
+    category = None
+
+    if 'ind' in feature:
+        category = 'individual'
+    elif 'reg' in feature:
+        category = 'registration'
+    elif 'car' in feature:
+        category = 'car'
+    elif 'calc' in feature:
+        category = 'calculated'
+
+    feature_dictionary = {
+        'varname' : feature,
+        'use': use,
+        'type':type,
+        'preserve':preserve,
+        'dtype': dtype,
+        'category':category
+    }
+    data.append(feature_dictionary)
+
+metadata = pd.DataFrame(data, columns = ['varname','use','type','preserve','dtype','category'])
+metadata.set_index('varname',inplace=True)
+metadata
+
+metadata[(metadata.type == 'categorical')&(metadata.preserve)].index
+pd.DataFrame({'count':metadata.groupby(['category'])['category'].size()}).reset_index()
+
+pd.DataFrame({'count':metadata.groupby(['use','type'])['use'].size()}).reset_index()
+
+plt.figure()
+fig, ax = plt.subplots(figsize=(6,6))
+x = trainset['target'].value_counts().index.values
+y = trainset['target'].value_counts().values
+
+sns.barplot(ax = ax , x= x, y=y)
+plt.ylabel("Number of values",fontsize=12)
+plt.xlabel("Target value",fontsize=12)
+
+plt.tick_params(axis='both',which='major',labelsize=12)
+plt.show();
+
+variable = metadata[(metadata.type == 'real')&(metadata.preserve)].index
+trainset[variable].describe()
+
+(pow(trainset['ps_car_12']*10.2)).head(10)
+
+(pow(trainset['ps_car_15'],2)).head(10)
+
+sample = trainset.sample(frac=0.05)
+var = ['ps_car_12','ps_car_15','target']
+sample = sample[var]
+sns.pariplot(sample,hue=target,palette='Set1',diag_kind='kde')
+plt.show()
+
+var = metadata[(metadata.type == 'real') & (metadata.preserve)].index
+i = 0
+t1 = trainset.loc[trainset['target'] != 0]
+t0 = trainset.loc[trainset['target'] == 0]
+
+sns.set_style('whitegrid')
+plt.figure()
+fig, ax = plt.subplots(3,4,figsize(16,12))
+
+for feature in  var:
+    i += 1
+    plt.subplot(3,4,i)
+    sns.kdeplot(t1[feature],bw=0.5,label='target=1')
+    sns.kdeplot(t0[feature],bw=0.5,label='target=0')
+    plt.ylabel('Density Plot',fontsize=12)
+    plt.xlabel(feature,fontsize=12)
+    locs, labels = plt.xticks()
+    plt.tick_params(axis='both',which='major',labelsize=12)
+plt.show();
+
+def corr_heatmap(var):
+    correlations = trainset[var].corr()
+    cmap = sns.diverging_palette(50,10,as_cmap=True)
+    fig, ax = plt.subplots(figsize=(10,10))
+    sns.heatmap(correlations,cmap=cmap,vmax=1.0,center = 0, fmt='.2f',
+    square=True, linewidths=.5,annot=True,cbar_kws={'shrink':.75})
+    plt.show();
+
+var = meatdata[(metadat.type=='real') & (metadata.preserve)].index
+corr_heatmap(var)
+
+sample = trainset.sample(frac=0.5)
+var = ['ps_reg_01', 'ps_reg_02', 'ps_reg_03', 'ps_car_12', 'ps_car_13', 'ps_car_15', 'target']
+sample = sample[var]
+
+sns.pairplot(sample,hue='target',palette='Set1',diag_kind='kde')
+plt.show()
+
+
+v = metadata[(metadata.type == 'binary') & (metadata.preserve)].index
+trainset[v].describe()
+
+
+bin_col = [col for col in trainset.columns if '_bin' in col]
+zero_list = []
+one_list = []
+
+for col in bin_col:
+    zero_list.append((trainset[col]==0).sum()/trainset.shape[0]*100)
+    one_list.append((trainset[col]==1).sum()/trainset.shape[0]*100)
+
+plt.figure()
+fig, ax = plt.subplots(figsize=(6,6))
+
+p1 = sns.barplot(ax=ax, x=bin_col, y=zero_list,color='blue')
+p2 = sns.barplot(ax=ax, x=bin_col,y=one_list,bottom=zero_list,color='red')
+
+plt.ylabel('Percent of zero/one [%]',fontsize =12)
+plt.xlabel('Binary features',fontsize=12)
+
+locs, labels = plt.xticks()
+plt.setp(labels, rotation=90)
+plt.tick_params(axis='both',which='major',labelsize=12)
+plt.legend((p1,p2),('Zero','One'))
+plt.show();
+
+var = metadata[(metadata.type == 'binary') & (metatdata.preserve)].index
+var = [col for col in trainset.columns if '_bin' in col]
+
+i = 0 
+t1 = trainset.loc[trainset['target'] != 0]
+t0 = trainset.loc[trainset['target'] == 0]
+
+sns.set_style('whitegrid')
+plt.figure()
+fig, ax = plt.subplots(6,3,figsize=(12,24))
+
+for feature in var:
+    i += 1
+    plt.subplot(6,3,i)
+    sns.kdeplot(t1[feature],bw=0.5,label='target=1')
+    sns.kdeplot(t0[feature],bw=0.5,label='target=0')
+    plt.ylabel('Density plpt',fontsize=12)
+    plt.xlabel(feature, fontsize=12)
+    loc, labels = plt.xticks()
+    plt.tick_params(axis='both',which='major',labelsize=12)
+plt.show();
+
+
+var = metadata[(metadata.type =='categorical') & (metatdata.preserve)].index
+
+for feature in var:
+    fig, ax = plt.subplots(figsize=(6,6))
+    cat_perc = trainset[[feature,'target']].groupby([feature],as_index=False).mean()
+    cat_perc.sort_values(by='target',ascending=False,inplace=True)
+    sns.barplot(ax=ax.x=feature,y='target',data=cat_perc,order=cat_perc[feature])
+    plt.ylabel('Percent of target with value1',fontsize=12)
+    plt.xlabel(feature,fontsize=12)
+    plt.tick_params(axis='both',which='major',labelsize=12)
+    plt.show();
+
+
+var = metadata[(metadata.category =='registration') & (metadata.preserve)].index
+
+sns.set_style('whitegrid')
+
+plt.figure()
+fig,ax = plt.subplots(1,3, figsize=(12,4))
+i = 0
+
+for feature in var:
+    i += 1
+    plt.subplot(1,3,i)
+    sns.kdeplot(trainset[feature],bw=0.5,label="train")
+    sns.kdeplot(testset[feature],bw=0.5,label='test')
+    plt.ylabel('Distribution',fontsize=12)
+    plt.xlabel(feature,fontsize=12)
+    locs, labels= plt.xticks()
+    plt.tick_params(axis='both',which='major',labelsize=12)
+plt.show()
+
+
+vars_with_missing = []
+
+for feature in trainset.columns:
+    missings = trainset[trainset[feature] == -1][feature].count()
+    if missings > 0:
+        vars_with_missing.append(feature)
+        missings_perc = missings/trainset.shape(0)
+
+
+col_to_drop = trainset.columns[trainset.columns.str.startswith('ps_calc_')]
+trainset = trainset.drop(col_to_drop,axis=1)
+testset = testset.drop(col_to_drop,axis=1)
+
+
+
+
