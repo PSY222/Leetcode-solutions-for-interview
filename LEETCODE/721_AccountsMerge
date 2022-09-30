@@ -1,0 +1,18 @@
+
+class Solution:
+    def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        accounts.sort(key= lambda x: (-len(x),x[0],x[1]))
+    
+        temp = deque(accounts[1:])
+        res = [accounts[0]]
+            
+        while temp:
+            node = temp.popleft()
+            if res[-1][0] == node[0] and len(list(set(res[-1]) & set(node))) != 1 :
+                res[-1] += list(set(res[-1])-set(node))
+                res[-1].extend(node)
+                
+            else:
+                res.append(node)
+        #return accounts
+        return sorted([sorted(list(set(i))) for i in res],key=lambda x:(x[0]))

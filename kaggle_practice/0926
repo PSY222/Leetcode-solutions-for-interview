@@ -251,5 +251,135 @@ trainset = trainset.drop(col_to_drop,axis=1)
 testset = testset.drop(col_to_drop,axis=1)
 
 
+def add_noise(series,noise_level):
+    return series*(1+noise_level*np.random.randn(len(series)))
+
+def target_encode(trn_series=None,
+                    tst_series=None,
+                    target = None,
+                    min_samples_leaf = 1,
+                    smoothing =1,
+                    noise_level=0):
+
+    assert len(trn_series) == len(target)
+    assert trn_series.name == tst_series.name
+
+    temp = pd.concat([trn_series,target],axis=1)
+
+    averages = temp.groupby(by=trn_series.name)[target.name].agg(['mean','count'])
+
+    smoothing = 1/(1+np.exp(-(averages['count']-min_samples_leaf)/smoothing))
+    prior = target.mean()
+
+    averages[target.name] = prior * (1-smoothing) + averages['mean']*smoothing
+
+    averages.drop(['mean','count'],axis=1,inplace=True)
+
+    ft_trn_series = pd.merge(trn_series.to_frame(trn_series.name),
+                            averages.reset_index().rename(columns={'index':target.name,target.name:'average'}),
+                            on = trn_series.name, how='left')['average'].rename(trn_series.name +'_mean').fillna(prior)
+    
+    ft_trn_series.index = trn_series.index
+    ft_tst_series = pd.merge(
+        tst_series.to_frame(tst_series.name),
+        averages.reset_index().rename(columns={'index':target.name, target.name:'average'}),
+        on = tst_series.name, how='left)['average'].rename(trn_series.name + '_mean').fillna(prior)
+
+        ft_tst_series.index = tst_series.index
+return add_noise(ft_trn_series,noise_level), add_noise(ft_tst_series,noise_level)
+
+train_encoded, test_encoded = target_encode(trainset['ps_car_11_cat'],
+                                testset['ps_car_11_cat'],
+                                target = trainset.target,
+                                min_samples_leaf=100,
+                                smoothing=10,
+                                noise_level =0.01)
+
+trainset['ps_car_11_cat_te'] = train_encoded
+trainset.drop('ps_car_11_cat',axis=1,inplace=True)
+metadata.loc['ps_car_11_cat','keep'] = False
+testset['ps_car_11_cat_te'] = test_encoded
+testset.drop('ps_car_11_cat',axis=1,inplace=True)
+
+desired_apriori = 0.10
+
+idx_0 = trainset[trainset.target ==0].index
+idx_1 = trainset[trainset.target == 1].index
+
+nb_0 = len(trainset.loc[idx_0])
+nb_1 = len(trainset.loc[idx_1])
+
+undersampling_rate = ((1-desired_apriori)*nb_1)/(nb_0*desired_apriori)
+undersampled_nb_0 = int(undersampling_rate*nb_0)
+
+undersampled_idx = shuffle(idx_0, random_state=314,n_samples=undersampled_nb_0)
+idx_list = list(undersampled_idx) + list(idx_1)
+
+trainset = trainset.loc[idx_list].reset_index(drop=True)
+
+trainset = trainset.replace(-1,np.nan)
+testset = testset.replace(-1,np.nan)
+
+for column in cat_features:
+    temp = pd.get_dummies(pd.Series(trainset[column]))
+    trainset = pd.concat([trainset,temp],axis=1)
+    trainset = trainset.drop([column],axis=1)
+
+for column in cat_features:
+    temp = pd.get_dummies(pd.Series(testset[column]))
+    testset = pd.concat([testset,temp],axis=1)
+    testset = testset.drop([column],axis=1)
+
+id_test = testset['id'].values
+target_train = trainset['target'].values
+
+trainset = trainset.drop(['target','id'],axis=1)
+testset = testset.drop(['id'],axis=1)
+
+class Ensemble(object):
+    def __init__(self,n_splits,stacker,base_models):
+        self.n_splits = n_splits
+        self.stacker =stacker
+        self.base_models = base_models
+    
+    def fit_predict(self,X, y, T):
+        X = np.array(X)
+        y = np.array(y)
+        T = np.array(T)
+
+        folds = list(StratifiedKFold(n_splits=self.n_splits,shuffle=True,random_state=314).split(X,y))
+
+        S_train = np.zeros((X.shape[0],len(self.base_models)))
+        S_test = np.zeros((T.shape[0],len(self.base_models)))
+
+        for i , clf in enumerate(self.base_models):
+            S_test_i = np.zeros((T.shape[0],self.n_splits))
+
+            for j, (train_idx,test_idx) in enumerate(folds):
+                X_train = X[train_idx]
+                y_train = y[train_idx]
+                X_holdout = X[test_idx]
+
+                print("Base model %d: fit %s model | fold %d" %(i+1,str(clf).split('(')[0],j+1))
+
+                clf.fit(X_train,y_train)
+                cross_score = cross_val_score(clf,X_train,y_train,cv=3,scoring='roc_auc')
+
+                print("cross_score [roc-auc]: %.5f [gini] : %.5f"%(cross_score.mean(),2*cross_score.mean()-1))
+
+                y_pred = clf.predict_proba(X_holdout)[:,1]
+
+                S_train[test_idx,i] = y_pred
+                S_test_i[:,j] = clf.predict_proba(T)[:,1]
+            S_test[:,i] = S_test_i.mean(axis=1)
+
+            results = cross_val_score(self.stacker,S_train,y,cv=3,scoring='roc_auc')
+
+            print("Stacker score[gini] : %.5f"%(2*results.mean()-1))
+
+            self.stacker.fit(S_train,y)
+            res = self.stacker.predict_proba(S_test)[:,1]
+            return res
 
 
+       
