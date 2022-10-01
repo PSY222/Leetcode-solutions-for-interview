@@ -3,3 +3,5 @@ Reference
 https://www.kaggle.com/code/willkoehrsen/introduction-to-manual-feature-engineering/notebook
 '''
 
+import pandas as pd
+import numpy as np
