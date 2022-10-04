@@ -1,28 +1,22 @@
 class Solution:
     def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
-        check = [[False for i in range(len(matrix))] for j in range(len(matrix[0]))]
-        top, side, bottom = 0, len(matrix[0])-1, len(matrix)-1
+        m, n = len(matrix), len(matrix[0])
+        l, r, t, b= 0, n-1, 0, m-1
         res = []
         
-        def inward(matrix,top,side):            
-            for i in range(len(matrix)):
-                for j in range(len(matrix[0])):
-                    if check[i][j] == False:
-                        if i == top:
-                            res.append(matrix[i][j])
-                        if j == side :
-                            res.append(matrix[i][j])
-                        if i == bottom :
-                            res.append(matrix[i][j])
-                    check[i][j] = True
-             #순서를 어떻게 뒤집지? 차례대로 어떻게 하지?
+        while l <= r and t <= b:
+            for col in range(l,r+1):
+                res.append(matrix[t][col])
+            t += 1
+            for row in range(t,b+1):
+                res.append(matrix[row][r])
+            r -= 1
+            for col in range(r,l-1,-1):
+                res.append(matrix[b][col])
+            b -= 1
+            for row in range(b,t-1,-1):
+                res.append(matrix[row][l])
+            l += 1
+        return res[:m*n]
 
-                
-        while side >= 0 and bottom >= 0 and top <= len(matrix):
-            for i in range(len(matrix)*len(matrix[0])):
-                inward(matrix,top,side)
-                top += 1
-                side -= 1
-                bottom -= 1
-        return list(set(res))
                     
