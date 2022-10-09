@@ -14,6 +14,13 @@ class Solution:
             return res
 
         m, n, k = len(board), len(board[0]), len(word)
+        tf = []
+        for i in [list(set(i)) for i in board]:
+            for w in word:
+                if w in i: tf.append(True)
+        
+        if True not in tf:
+            return False
 
         for i in range(m):
             for j in range(n):
