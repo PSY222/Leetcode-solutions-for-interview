@@ -49,5 +49,15 @@ for i, col in enumerate(train.select_dtypes('float')):
 plt.subplots_adjust(top=2)
 
 
+train.select_dtypes('object').head()
+
+mapping = {'yes':1,'no':0}
+
+for df in [train,test]:
+    df['dependency'] = df['dependency'].replace(mapping).astype(np.float64)
+    df['edjefa'] = df['edjefa'].replace(mapping).astype(np.float64)
+    df['edjefe'] = df['edjefe'].replace(maping).astype(np.float64)
+
+train[['dependcy','edjefa','edjefe']].describe()
 
 
