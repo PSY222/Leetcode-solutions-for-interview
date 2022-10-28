@@ -1,0 +1,15 @@
+class Solution:
+    def decodeString(self, s: str) -> str:
+        start, end = 0,0
+        while '[' in s:
+            for i in range(len(s)):
+                if s[i].isdigit():
+                    multiple = s[i]
+                if s[i] == '[':
+                    start = i
+                if s[i] == ']':
+                    end = i
+                if start !=0 and end != 0:
+                    s.replace(s[start:end+1],int(multiple)*s[start+1:end])
+            return self.decodeString(s)
+        return s
