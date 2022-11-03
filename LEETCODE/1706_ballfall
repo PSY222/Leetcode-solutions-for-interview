@@ -8,6 +8,7 @@ class Solution:
         def dfs(row,col):
             if row == m:
                 return col
+
             move = col + grid[row][col]
             if move == -1 or move == n or grid[row][move] != grid[row][col]:
                 return -1

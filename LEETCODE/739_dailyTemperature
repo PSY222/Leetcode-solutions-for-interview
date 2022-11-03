@@ -30,3 +30,5 @@ class Solution:
                 answer[curr] = i - curr
             stack.append(i)
         return answer
+
+        #faster version
