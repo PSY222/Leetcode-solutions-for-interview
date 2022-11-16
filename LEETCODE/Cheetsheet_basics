@@ -1,0 +1,93 @@
+## Source: https://www.piratekingdom.com/leetcode/templates
+
+#Binary Search ( O(logn), size(array))
+
+def binarySearch(nums,target):
+    l,r = 0 , len(nums)
+    while l < r:
+        m = (l+r) //2
+        if nums[m] < target:
+            l = m + 1
+        else:
+            r = m
+    return l
+
+#Binary Tree Traversals (O(n), size(tree))
+
+def levelorder(root):
+    if not root:
+        return
+    q = deque([root])
+
+    while q :
+        size = len(q)
+        for i in range(size):
+            node = q.popleft()
+            if node.left:
+                q.append(node.left)
+            if node.right:
+                q.append(node.right)
+
+#Matrix Traversal (O(n), n = size(grid))
+
+def dfs(grid, visited):
+    if i <0 or j <0 or i >= len(grid) or j >= len(grid[0]) or (i,j) in visited:
+        return
+    visited.add((i,j))
+    dfs(grid,i+1,j,visited)
+    dfs(grid,i-1,j,visited)
+    dfs(grid,i,j+1,visited)
+    dfs(grid,i+1,j-1,visited)
+
+def bfs(grid,i,j):
+    dirs = [ [0,1], [0,-1], [1,0], [-1,0] ]
+    q = deque([i,j])
+    visited = set([(i,j)])
+
+    while q:
+        cur = q.popleft()
+        for dir in dirs:
+            i = cur[0] + dir[0]
+            j = cur[1] + dir[1]
+            if i<0 or j <0 or i>= len(grid) or j >=len(grid[0]) or (i,j) in visited:
+                continue
+            visited.add((i,j))
+            q.append([i,j])
+
+#graph traversals (O(n), n = size(nodes))
+
+def dfs(graph,cur,visited):
+    if cur in visited:
+        return
+    visited.add(cur)
+    for next in graph[curr]:
+        dfs(graph,next,visited)
+
+def bfs(graph,node):
+    q = deque([node])
+    visited = set([node])
+
+    while q:
+        cur = q.popleft()
+        for next in graph[cur]:
+            if next in visited:
+                continue
+        q.append(next)
+        visited.add(next)
+
+#Linked List (O(n), length(string))
+
+def traverse(head):
+    if not head:
+        return
+    slow, fast, dummy = head, head, ListNode(0,head)
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+
+#MergeSort (O(nlogn), size(array))
+
+
+
+
