@@ -62,4 +62,5 @@ class Solution:
                 i = match_i
             else:  
                 return False
-        return all([p_char == "*" for p_char in p[j:]])
+            print(p[j:])
+        return list(p[j:]).count('*') == len(p[j:]) 
