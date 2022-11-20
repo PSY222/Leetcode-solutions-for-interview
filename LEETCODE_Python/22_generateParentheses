@@ -1,0 +1,44 @@
+class Solution:
+    def generateParenthesis(self, n: int) -> List[str]:
+        
+        def combination(elements, path,res):
+            if path in res:
+                return
+            if len(path) == n*2:
+                return res.append(path)
+            if not valid_parent(path,0):
+                return
+            for i in range(len(elements)):
+                combination(elements[:i] + elements[i+1:],path+elements[i],res)
+        
+        def valid_parent(path,check):
+            paired_num = {'(':1,')':-1}
+            for p in path:
+                check += paired_num[p]
+                if check < 0:
+                    return False
+            return True
+        
+        res = []
+        combination('()'*n,'',res)
+        return res
+        
+
+class Solution:
+    def generateParenthesis(self, n: int) -> List[str]:
+        
+        res = []
+        self.dfs(n,n,res,'')
+        return res
+    
+    def dfs(self,l,r,res,curr):
+        if r < l:
+            return
+        if not l and not r:
+            return res.append(curr)
+        if l:
+            self.dfs(l-1,r,res,curr+'(')
+        if r:
+            self.dfs(l,r-1,res,curr+')')
+            
+        
