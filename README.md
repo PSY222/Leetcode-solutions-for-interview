@@ -10,6 +10,6 @@ kaggle_practice > I take a note of impressive codes from Kaggle
 
 programmers_practice > I write down solutions of Korea programming website programmers
 
-I mentioned the socure of the codes that I referred from other people, if there are any issues please contact me by ss26348@naver.com
+I mentioned the source of the codes that I referred from other people, if there are any issues please contact me by ss26348@naver.com
 
 ** This repository is for personal academic study purpose
