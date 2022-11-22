@@ -1,6 +1,6 @@
 # Welcome to PSY's Daily Programming Playground 
 
-This is where I practice my programming skills
+This is where I practice and keep a track of my programming skills
 
 LEETCODE > I gather my solutions and some memorable solutions to review
 
