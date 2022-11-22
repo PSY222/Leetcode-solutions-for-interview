@@ -12,4 +12,4 @@ programmers_practice > I write down solutions of Korea programming website progr
 
 I mentioned the source of the codes that I referred from other people, if there are any issues please contact me by ss26348@naver.com
 
-** This repository is for personal academic study purpose
+** This repository is maintained for personal study purpose
