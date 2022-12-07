@@ -8,23 +8,6 @@ class Node:
         self.next = next
 """
 
-class Solution:
-    def connect(self, root: 'Optional[Node]') -> 'Optional[Node]':
-        dq = deque(root)
-        dq.append(None)
-
-        while dq:
-            node = dq.popleft()
-            if not node:
-                node.next = dq[0]
-                if node.left:
-                    dq.append(node.left)
-                if node.right:
-                    dq.append(node.right)
-            elif len(dq) >0:
-                dq.append(None)
-        return 
-
 #Source : https://leetcode.com/problems/populating-next-right-pointers-in-each-node/solutions/37484/7-lines-iterative-real-o-1-space/
 
 def connect(self, root):
