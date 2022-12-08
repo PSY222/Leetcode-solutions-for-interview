@@ -1,0 +1,26 @@
+class Solution:
+    def minAreaRect(self, points: List[List[int]]) -> int:
+        ydict = defaultdict(set)
+       
+        for (x,y) in points:
+            ydict[y].add(x)
+
+        ydict = dict(sorted(filter(lambda e: len(list(e[1]))>=2,ydict.items())))
+        
+        prev_key = next(iter(ydict))
+        prev_val = ydict[prev_key]
+
+        ydict.pop(prev_key)
+    
+        for kys,val in ydict.items():
+            common = list(prev_val.intersection(val))
+            if len(common) >=2:
+                width = common[1]-common[0]
+                height = kys - prev_key
+                return height*width
+            prev = val
+            prev_key = kys
+        return 0
+
+
+        

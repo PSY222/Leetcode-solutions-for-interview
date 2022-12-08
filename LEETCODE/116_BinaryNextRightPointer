@@ -7,7 +7,6 @@ class Node:
         self.right = right
         self.next = next
 """
-
 #Source : https://leetcode.com/problems/populating-next-right-pointers-in-each-node/solutions/37484/7-lines-iterative-real-o-1-space/
 
 def connect(self, root):
