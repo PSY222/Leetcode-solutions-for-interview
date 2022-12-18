@@ -31,4 +31,4 @@ class Solution:
             stack.append(i)
         return answer
 
-        #faster version
+        #faster version (monotonic stack)
