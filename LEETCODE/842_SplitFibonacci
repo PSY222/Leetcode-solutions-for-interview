@@ -53,4 +53,3 @@ public List<Integer> splitIntoFibonacci(String S) {
         }
         return false;
     }
-
