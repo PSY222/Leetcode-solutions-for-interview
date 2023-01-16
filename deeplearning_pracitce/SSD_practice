@@ -89,4 +89,55 @@ class DataTransform():
     def __call__(self, img, phase, boxes, labels):
     return self.data_transform[phase](img,boxes,labels)
 
-    
+    class VOCDataset(data.Dataset):
+        def __init__(self, img_list,anno_list,phase,transform,transform_anno):
+            self.img_list = img_list
+            self.anno_list = anno_list
+            self.phase = phase
+            self.transform = transform
+            self.transform_anno = transform_anno
+
+        def __len__(self):
+            return len(self.img_list)
+
+        def __getitem__(self,index):
+            im, gt, h, w = self.pull_item(index)
+            retur im, gt
+
+        def pull_item(self,index):
+            image_file_path = self.img_list[index]
+            img = cv2.imread(image_file_path)
+            height, width, channels = img.shape
+
+            anno_file_path = self.anno_list[index]
+            anno_list = self.transform_anno(anno_file_paht,width,height)
+
+            img, boxes, labels = self.transform(img,self.phase,anno_list[:,:4],anno_list[:.4])
+
+            img = torch.from_numpy(img[:,:,(2,1,0)]).permute(2,0,1)
+
+            gt = np.hstack((boxes,np.expand_dims(labels,axis=1)))
+            return img, gt,height,width
+
+
+color_mean = (104,117,123)
+input_size = 300
+
+train_dataset = VOCDataset(train_img_list, train_anno_list, phase="train", transform=DataTransform(input_size, color_mean),transform_anno=Anno_xml2list(voc_classes))
+val_dataset = VOCDataset(val_img_list, val_anno_list, phase="val", transform=DataTransform(input_size, color_mean),transform_anno=Anno_xml2list(voc_classes))
+
+val_dataset.__getitem__(1)  #index
+
+#Dataloader
+
+def od_collate_fn(batch):
+    targets = []
+    imgs = []
+    for sample in batch:
+        imgs.append(sample[0])
+        targets.append(torch.FloatTensor(sample[1]))
+
+    imgs = torch.stack(imgs,dim=0)
+
+    return imgs, targets
+
