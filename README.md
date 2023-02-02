@@ -1,6 +1,6 @@
 ## Welcome to PSY's Daily Programming Playground 
 
-![Quote](https://github-readme-quotes.herokuapp.com/quote)
+[![Readme Quotes](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=dark)](https://github.com/piyushsuthar/github-readme-quotes)
 
 #### *Folder Overview*
 ##### * LEETCODE : Most of the codes are from daily + weekly Leetcode challenge. I collect impressive solutions to learn various problem solving skills.
