@@ -1,5 +1,7 @@
 ## Welcome to PSY's Daily Programming Playground 
 
+![Quote](https://github-readme-quotes.herokuapp.com/quote)
+
 #### *Folder Overview*
 ##### * LEETCODE : Most of the codes are from daily + weekly Leetcode challenge. I collect impressive solutions to learn various problem solving skills.
 ##### * deeplearning_practice : Pytorch and Tensorflow codes from the several study sources like *Hands on machine learning* and *Pytorch Deep Learning*
