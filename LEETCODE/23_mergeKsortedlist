@@ -25,12 +25,26 @@ class Solution:
                 list2.next = mergeTwoLists(list1,next_val)
                 return list2
         
-        # merged = lists[0]
-        # for i in range(1,len(lists)):
-        #     merged = mergeTwoLists(merged,lists[i])
-        # return merged
 
         mid = len(lists)//2
         l,r = self.mergeKLists(lists[:mid]), self.mergeKLists(lists[mid:])
         return mergeTwoLists(l,r)
+
+#Solution2
+import heapq as hq
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        heap = [(head.val,i,head) for i, head in enumerate(lists) if head]
+        hq.heapify(heap)
+        dummy = ListNode(0)
+        curr= dummy
+        while heap != []:
+            val, i, node = heap[0]
+            if not node.next :
+                heappop(heap)
+            else:
+                heapreplace(heap,(node.next.val,i,node.next))
+            curr.next = node
+            curr = curr.next
+        return dummy.next
         
