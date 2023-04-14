@@ -17,6 +17,7 @@
 #### *👉Useful Cheatsheets for the interview*
 [Leetcode CheatSheet](https://leetcode.com/explore/interview/card/cheatsheets/720/resources/4723/)
 
+[Selected Interview Question Lists from Leetcode](https://leetcode.com/discuss/interview-question/2069641/The-Only-Lists-You-Need-For-Your-Interview-Preparation/1406307)
 
 
 ###### *This repository is maintained for personal study purpose*
