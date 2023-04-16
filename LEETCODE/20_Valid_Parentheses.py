@@ -7,6 +7,5 @@ class Solution:
                 stac.append(i)
             elif not stac or dic[stac.pop()] != i:
                 return False
-            s
         
         return not stac

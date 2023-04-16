@@ -1,26 +1,15 @@
 class Solution:
     def generateParenthesis(self, n: int) -> List[str]:
-        
-        def combination(elements, path,res):
-            if path in res:
-                return
-            if len(path) == n*2:
-                return res.append(path)
-            if not valid_parent(path,0):
-                return
-            for i in range(len(elements)):
-                combination(elements[:i] + elements[i+1:],path+elements[i],res)
-        
-        def valid_parent(path,check):
-            paired_num = {'(':1,')':-1}
-            for p in path:
-                check += paired_num[p]
-                if check < 0:
-                    return False
-            return True
-        
         res = []
-        combination('()'*n,'',res)
+        def backtrack(s='', left=0, right=0):
+            if len(s) == 2*n:
+                res.append(s)
+                return
+            if left < n:
+                backtrack(s+'(', left+1, right)
+            if right < left:
+                backtrack(s+')', left, right+1)
+        backtrack()
         return res
         
 
