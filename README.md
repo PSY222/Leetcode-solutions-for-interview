@@ -6,6 +6,7 @@ This repository consists of insightful solutions to major Leetcode questions. I 
 -----------------------
 #### *👉 How to Contribute to this repository*
 - Fork/clone this repository and send PR request
+- Please leave a short comment about the key idea of the solution (example. #two pointers method #divide and conquer"
 - If you want to add solutions in other programming languages, add another folder named as 'Leetcode-___' like Leetcode-Java
 - Feel free to share helpful links or sources for the interview preparation at this README.md file :)
 
