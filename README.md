@@ -5,7 +5,7 @@ This repository consists of insightful solutions to major Leetcode questions. I 
 
 -----------------------
 #### *👉 How to Contribute to this repository*
-- Forck/clone this repository and send PR request
+- Fork/clone this repository and send PR request
 - If you want to add solutions in other programming languages, add another folder named as 'Leetcode-___' like Leetcode-Java
 - Feel free to share helpful links or sources for the interview preparation at this README.md file :)
 
