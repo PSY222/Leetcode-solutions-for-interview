@@ -41,7 +41,7 @@ class Solution2{
             }
             return maxLength;
         }
-}
+};
 
 
 class Solution3{
