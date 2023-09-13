@@ -1,6 +1,6 @@
 #include <cmath> 
 
-class Solution {
+class Solution1 {
 public:
     int reverse(int x) {
         int ans = 0;
