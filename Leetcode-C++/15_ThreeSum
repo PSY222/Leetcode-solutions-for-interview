@@ -1,3 +1,6 @@
+#include <vector>
+#include <algorithm>
+
 class Solution1 {
 public:
     vector<vector<int>> threeSum(vector<int>& nums) {
@@ -31,10 +34,13 @@ class Solution2 {
 public:
     vector<vector<int>> threeSum(vector<int>& nums) {
         if (all_of(nums.begin(),nums.end(),[&](const int i) {return i == 0;})) return {{0,0,0}};
-        int min = *min_element(nums.begin(), nums.end()), max = *max_element(nums.begin(), nums.end()), target;
+        int min = *min_element(nums.begin(), nums.end());
+        int max = *max_element(nums.begin(), nums.end()), target;
+
         if (min >= 0 || max <= 0) return {};
         int range = max - min + 1, exist = 0;
         vector<int> count(range, 0);
+        
         for(int& i : nums) ++count[i - min];
         for(int i = 0; i < range; i++){
             if(count[i] !=0) nums[exist++] = i + min;
