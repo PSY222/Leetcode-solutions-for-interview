@@ -1,3 +1,6 @@
+#include <vector>
+#include <algorithm>
+
 class Solution1 {
 public:
     int minSubArrayLen(int target, vector<int>& nums) {

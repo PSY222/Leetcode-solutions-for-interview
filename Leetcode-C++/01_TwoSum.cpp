@@ -1,3 +1,6 @@
+#include <vector>
+#include <algorithm>
+
 class Solution1 {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
@@ -45,4 +48,3 @@ class Solution3 {
             return {};
         }
 };
-

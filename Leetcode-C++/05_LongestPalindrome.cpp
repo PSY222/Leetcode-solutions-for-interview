@@ -1,3 +1,6 @@
+#include <vector>
+#include <algorithm>
+
 class Solution1 {
 public:
     string longestPalindrome(string s) {

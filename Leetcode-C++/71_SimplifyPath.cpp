@@ -1,4 +1,3 @@
-					// \U0001f609\U0001f609\U0001f609\U0001f609Please upvote if it helps \U0001f609\U0001f609\U0001f609\U0001f609
 class Solution {
 public:
     string simplifyPath(string path) {
